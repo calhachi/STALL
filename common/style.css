@@ -1,0 +1,123 @@
+body {
+    margin: 0;
+}
+
+main {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #fff;
+}
+
+.thumbnailImage {
+    width: 160px;
+    height: 120px;
+}
+
+header {
+    background-color: #88BCFF;
+}
+
+div.header {
+    height: 10vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+img#top {
+    width: 20vw;
+}
+
+div.header img {
+    height: 8vh;
+    width: 8vw;
+}
+
+div.header input {
+    width: 20vw;
+}
+
+div.header div {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+
+h1#top {
+    margin: 0;
+}
+
+div.menu {
+    background-color: #F2F6FC;
+    border: 1px solid #A9B0BA;
+    padding: 0 1em;
+}
+
+/* ↓mypage用―――――――――――――――――――――――――― */
+
+
+img.user_icon {
+    width: 100px;
+}
+
+div.flex-row {
+    display: flex;
+    gap: 100px;
+
+}
+
+#aImagePreview {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+img#aImagePreview {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    /* border-radius: 10px; */
+}
+
+/* Chrome, Edge, Safari */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+div.worksCard {
+    min-height: 200px;
+    display: flex;
+    gap: 50px;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F2F6FC;
+    border: 2px solid #CDD3DB;
+    border-radius: 4px;
+    padding: 0 50px 0 50px;
+    margin-bottom: 20px;
+}
+
+.deleteButton {
+    color: white;
+    background-color: #ed5353;
+    border: 2px solid #7c3737;
+    border-radius: 4px;
+}
+
+/* ↑mypage用―――――――――――――――――――――――――― */
+/* ↓login用―――――――――――――――――――――――――― */
+img#preview {
+    width: 100px;
+}
+
+/* ↑login用―――――――――――――――――――――――――― */

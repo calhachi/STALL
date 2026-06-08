@@ -1,0 +1,5 @@
+.env
+docs/
+.vscode/
+userdata/
+base.php
