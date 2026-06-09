@@ -1,0 +1,9 @@
+ログイン中だけ表示するページ用
+require_once __DIR__ . '/../common/requireLogin.php';
+
+requireLogin();
+
+未ログイン中だけ表示するページ用
+require_once __DIR__ . '/../common/requireGuest.php';
+
+requireGuest();

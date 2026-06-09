@@ -1,0 +1,83 @@
+scenallion/index
+
+	cart
+		index
+        
+	category
+        scenalio
+            system1
+            system2
+            ...
+        material
+	mypage
+		favorite
+            index
+        memberinfo
+            index
+            modification
+            check
+            done
+        dlhistory
+            index
+            search
+
+        works
+            index
+            add
+            add-check
+            done
+
+	registration
+        index
+        check   
+        done
+    item
+        商品コードごとのページとか色々
+    other
+        guidelines
+
+admin
+    top
+        userlist
+            delete
+
+
+登録情報
+    ユーザー名
+    メールアドレス
+    パスワード
+
+
+作品情報
+    タイトル
+    価格
+    カテゴリ
+        使用システム
+    推奨プレイ人数
+    プレイ時間
+    タグ　任意
+    サムネ　任意
+    作品説明文
+    サンプル
+    作品データ
+
+
+
+
+SELECT tags.tag_name
+FROM work_tags
+JOIN tags
+ON work_tags.tag_id = tags.id
+WHERE work_tags.work_id = ?
+
+作品登録時に作品詳細ページに載せる用のサンプル画像を4枚くらい一緒にアップロードできて、
+4枚ともサムネイル化して1枚目は検索画面に出す、2～4枚目は作品詳細ページで大きめに表示した一枚目の下に3枚並べて出して、クリックしたら1枚目と入れ替えで大きく表示されるようにしたい
+
+商品本体はファイル名の直打ちでDLできないようなしくみにしたい
+商品本体とサンプル画像を管理するテーブルはどう作れば良い？
+
+
+        if ($_FILES['icon']['error'] == 0) {
+            move_uploaded_file($icon['tmp_name'], './icon/' . $icon_name);
+        }
+これをサイト名/userdata（非公開領域）/iconフォルダ内に保存するようにできる？

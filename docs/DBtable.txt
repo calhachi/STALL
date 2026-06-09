@@ -1,0 +1,69 @@
+データテーブル
+
+users   12
+    id　登録順のid INT
+    username ユーザー名 varchar(50)
+    email　メールアドレス varchar(255)
+    password_hash　パスワード varchar(255)
+    created_at　登録日時 DATETIME デフォ：current_timestamp()	
+    profile_text　プロフィール文 TEXT
+    icon_image アイコンファイル名 varchar(255)　デフォ：null
+    register_token 認証URL用　varchar(255)
+    is_berified 認証完了で1 TYNYINT(1)　デフォ：0
+    is_banned BANされてたら1 TYNYINT(1)　デフォ：0
+    deleted 退会してたら1 TYNYINT(1) デフォ：0
+    role 初期値0（user）　1（admin）にすると管理画面閲覧権限アリ TYNYINT(1) デフォ：0
+
+works 19
+    id 作品id
+    user_id　投稿者
+    title　作品タイトル VAR(255)
+    price 価格
+    category_id　カテゴリ TYNYINT
+    subcategory_id　サブカテゴリid SMALLINT
+    min_players　プレイ人数min～max人 TYNYINT
+    max_players　プレイ人数min～max人 TYNYINT
+    text_hours　テキセで◯時間　TYNYINT
+    voice_hours　ボイセで◯時間　TYNYINT
+    description 作品説明文 TEXT
+    file_name      実ファイル名(ランダム化後) VAR(255)
+    original_name  元のファイル名 VAR(255)
+    thumbnail_name　サムネ（任意） VAR(255)
+        posted_at　投稿日時 DATETIME
+    updated_at 最終更新日 DATETIME
+    view_count　閲覧数 INT
+
+categories
+id
+name カテゴリ名VAR(100)
+
+subcategories
+id
+category_id 親カテゴリID INT
+name サブカテゴリ名VAR(100)
+
+works_images 4
+    id　INT
+    work_id　works.idと同じ値 INT
+    image_name 元ファイル名+ランダム化 VAR(255)
+    display_order　作品詳細画面での表示順 TINYINT
+
+
+
+tags
+    id　タグのid
+    category_id 親カテゴリID INT
+    tag_name タグの内容VAR(20)
+
+works_tag
+    work_id　作品id
+    tag_id　タグのid 
+
+favorite
+user_id　お気に入りしたユーザー
+work_id　お気に入りされた作品
+
+purchase
+id　した順
+user_id　したユーザー
+work_id　された作品

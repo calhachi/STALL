@@ -1,0 +1,57 @@
+【ページ基礎構造】
+works-detailバグ修正　newworkが上手く出ない
+
+
+【レイアウト、表示関連】
+・chara-limitを使った<p class="count"></p>のカウントアップを
+　テキストボックスをrelasive・p.countをabsoluteで右下に表示されるように調整
+
+
+・ログイン、会員情報変更のバリデーションで引っかかった時、
+　注意書きの赤文字までスクロールするjs
+
+・作品登録機能　プレビューページを作品詳細ページと同じレイアウトにするとユーザーも安心して投稿できるか？
+　後から作るとちょっと手戻り感
+　でもヘッダーフッターもできてない今作るの重い
+
+
+会員登録システム→ログイン
+管理者システム（作品削除・ユーザーBAN）
+作品をDBに登録・アップロード
+    zipはやっぱ怖いからpdfで
+作品情報をDBからfetch→表示
+作品検索作品をカートに入れる→ダウンロード
+ダウンロード履歴
+作品閲覧数ランキング表示
+お気に入り登録とお気に入り一覧表示
+最終ログイン時間でセッションタイムアウト
+
+$username様へ
+
+scenallionへのユーザー登録が完了しました。
+
+
+下記URLよりscenallionの各種サービスをご利用いただけます。
+
+作品を投稿する
+http://scenallion/mypage/works/add/
+
+作品をさがす
+http://scenallion/category/
+
+このメールにお心あたりがない場合は誠に恐れ入りますが
+破棄していただきますようお願いいたします。
+
+発行元：scenallion　http://scenallion/
+(c)2026 scenallion All Rights Reserved.
+
+F4F4F4メイン白
+1A1A1A文字黒
+72708C灰紫
+8BB739黄緑
+
+work_images 4
+    id　INT
+    work_id　works.idと同じ値 INT
+    image_name 元ファイル名+ランダム化 VAR(255)
+    display_order　作品詳細画面での表示順 TINYINT

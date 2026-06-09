@@ -1,0 +1,89 @@
+            <p>サーバーとの通信でエラーが発生しました。<br>
+                時間を置いてから再度お試しください。</p>
+            <p><a href="<?= $_ENV['APP_URL_'] ?>">トップページへ</a></p>
+
+            <p><a href="<?= $_ENV['APP_URL_'].'' ?>"></a></p>
+
+トランザクションなし
+
+try {
+    $dbh = dbConnect();
+
+    $stmt = $dbh->prepare(
+        'SELECT email,password_hash,icon_image,profile_text
+        FROM users
+        WHERE id=:id'
+    );
+    $stmt->execute([
+        'id' => $_SESSION['userId']
+    ]);
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    header('Location: ' . $_ENV['APP_URL'] . '/error.php');
+    exit();
+}
+
+トランザクションあり
+
+        $dbh = null;
+
+        try {
+            $dbh = dbConnect();
+
+            $dbh->beginTransaction();
+
+            $stmt = $dbh->prepare(
+                'UPDATE users SET
+        username = :username,
+        email = :email,
+        password_hash = :hashedPass,
+        icon_image = :iconImage,
+        profile_text = :profileText
+    WHERE id = :id'
+            );
+            $stmt->execute([
+                'username' => $username,
+                'email' => $email,
+                'hashedPass' => $hashedPass,
+                'iconImage' => $iconName,
+                'profileText' => $profile,
+                'id' => $_SESSION['userId']
+            ]);
+
+            // 古いアイコン削除
+            if ($iconUploaded === 1) {
+                unlink(__DIR__ . '/../userdata/icon/' . $oldIconName);
+            }
+
+            $isSuccess = 1;
+            $dbh->commit();
+        } catch (PDOException $e) {
+            if ($dbh && $dbh->inTransaction()) {
+                $dbh->rollBack();
+            }
+            error_log($e->getMessage());
+            header('Location: ' . $_ENV['APP_URL'] . '/error.php');
+            exit();
+        }
+    }
+}
+
+
+$_SESSION['userId']
+$_SESSION['username']
+$_SESSION['role']
+
+
+            <?php if (): ?>
+            <?php elseif (): ?>
+            <?php endif; ?>
+
+エラーが見えて便利
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+    // ↓本番前に下のコメントアウトと入れ替える形で消す
+    // echo $e->getMessage();
+    // exit();

@@ -1,0 +1,173 @@
+できる。
+むしろ実務だと「cronでBatch.php実行」はかなり定番。
+
+例えば:
+
+```
+batch/
+ ├─ dailyBatch.php
+ ├─ cleanupTempImages.php
+ ├─ sendMailQueue.php
+ └─ aggregateRanking.php
+```
+
+みたいに分けるか、
+
+```
+dailyBatch.php
+```
+
+1本で複数処理回す。
+
+---
+
+例えば:
+
+```php 
+<?php
+
+require_once '../common/bootstrap.php';
+
+// temp画像削除
+deleteTempImages();
+
+// 未認証仮登録削除
+deleteExpiredPreUsers();
+
+// ランキング更新
+updateRanking();
+```
+
+みたいな感じ。
+
+小〜中規模サイトなら全然普通。
+
+---
+
+今作ってる作品投稿サイト系でcron相性いいのはこの辺。
+
+---
+
+# 1. temp画像削除
+
+さっきのやつ。
+
+超定番。
+
+---
+
+# 2. 仮登録放置アカウント削除
+
+メール認証前のユーザーを消す。
+
+例えば:
+
+* 24時間認証されなかった
+* preregister_users から削除
+
+```sql 
+DELETE FROM preregister_users
+WHERE created_at < NOW() - INTERVAL 1 DAY
+```
+
+かなり実務っぽい。
+
+---
+
+# 3. 人気作品ランキング更新
+
+毎アクセスで集計すると重いから、
+cronで先に集計してDB保存。
+
+例えば:
+
+* いいね数
+* 閲覧数
+* DL数
+
+からランキング生成。
+
+---
+
+# 4. 通知メールキュー送信
+
+メール即送信じゃなく:
+
+
+mail_queue
+```
+
+テーブルに貯めてcron送信。
+
+大量通知で便利。
+
+---
+
+# 5. 古い通知削除
+
+```sql 
+DELETE FROM notifications
+WHERE created_at < NOW() - INTERVAL 30 DAY
+```
+
+DB肥大化防止。
+
+---
+
+# 6. 閲覧数の集計
+
+アクセス毎UPDATEは重いから:
+
+* sessionに保持
+* 一時テーブルに保持
+* cronでまとめて加算
+
+とか。
+
+かなり本格的。
+
+---
+
+# 7. sitemap.xml自動生成
+
+作品増えたら更新。
+
+SEO系。
+
+---
+
+# 8. バックアップ
+
+DB export。
+
+ロリポップだと制限あるけど簡易バックアップ程度なら可能。
+
+---
+
+あとファイル名は `Batch.php` より、
+
+
+dailyBatch.php
+cleanupBatch.php
+```
+
+みたいに用途分けた方が後で楽。
+
+`Batch.php` だけだと数ヶ月後かなり混乱しやすい。
+
+---
+
+おすすめは:
+
+```id="8qdr7m"batch/dailyBatch.php
+```
+
+に:
+
+* temp削除
+* 仮登録削除
+* 通知整理
+
+を入れる構成。
+
+実装難易度と「本格感」のバランスが良い。
