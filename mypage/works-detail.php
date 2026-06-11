@@ -76,12 +76,18 @@ if (!isset($workId) || !is_numeric($workId)) {
         $oldWorksStmt = $dbh->prepare(
             'SELECT file_name, original_name, thumbnail_name
             FROM works
-            WHERE id = :id'
+            WHERE id = :id
+            AND user_id = :userId'
         );
         $oldWorksStmt->execute([
-            'id' => $workId
+            'id' => $workId,
+            'userId' => $_SESSION['userId']
         ]);
         $oldWorks = $oldWorksStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($oldWorks === false) {
+            $worksIdError = '作品が存在しません。';
+        }
 
         $categoryMap = array_column($categories, 'name', 'id');
 
@@ -104,7 +110,7 @@ if (!isset($workId) || !is_numeric($workId)) {
             }
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($worksIdError === '' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (trim($worksTitle) == '') {
                 $worksTitleError = '作品タイトルが入力されていません。';
@@ -134,7 +140,7 @@ if (!isset($workId) || !is_numeric($workId)) {
                 $subCategoryError = 'カテゴリとサブカテゴリの組み合わせが不正です。';
             }
 
-            if ($categoryId === 1) {
+            if ((int)$categoryId === 1) {
                 if (
                     !ctype_digit($minPlayers) ||
                     !ctype_digit($maxPlayers) ||
@@ -494,8 +500,9 @@ if (!isset($workId) || !is_numeric($workId)) {
                     }
                 }
             }
+        }
 
-            // 更新後データ取得
+        if ($worksIdError === '') {
             $newWorksStmt = $dbh->prepare(
                 'SELECT *
                     FROM works
@@ -507,28 +514,29 @@ if (!isset($workId) || !is_numeric($workId)) {
             $newWork = $newWorksStmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$newWork) {
-                $worksIdError = '作品が存在しません';
-            }
-            $newWorksImagesStmt = $dbh->prepare(
-                'SELECT image_name,display_order
-                    FROM works_images
-                    WHERE work_id = :id
-                    ORDER BY display_order'
-            );
-            $newWorksImagesStmt->execute([
-                'id' => $workId
-            ]);
-            $newWorksImages = $newWorksImagesStmt->fetchAll(PDO::FETCH_ASSOC);
+                $worksIdError = '作品が存在しません。';
+            } else {
+                $newWorksImagesStmt = $dbh->prepare(
+                    'SELECT image_name, display_order
+                        FROM works_images
+                        WHERE work_id = :id
+                        ORDER BY display_order'
+                );
+                $newWorksImagesStmt->execute([
+                    'id' => $workId
+                ]);
+                $newWorksImages = $newWorksImagesStmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $newWorksTagsStmt = $dbh->prepare(
-                'SELECT tag_id
-                    FROM works_tag
-                    WHERE work_id = :id'
-            );
-            $newWorksTagsStmt->execute([
-                'id' => $workId
-            ]);
-            $selectedTagsIds = $newWorksTagsStmt->fetchAll(PDO::FETCH_COLUMN);
+                $newWorksTagsStmt = $dbh->prepare(
+                    'SELECT tag_id
+                        FROM works_tag
+                        WHERE work_id = :id'
+                );
+                $newWorksTagsStmt->execute([
+                    'id' => $workId
+                ]);
+                $selectedTagsIds = $newWorksTagsStmt->fetchAll(PDO::FETCH_COLUMN);
+            }
         }
     } catch (PDOException $e) {
         if ($dbh->inTransaction()) {
@@ -553,23 +561,7 @@ if (!isset($workId) || !is_numeric($workId)) {
 </head>
 
 <body>
-    <header>
-        <div class="header">
-            <h1><img src="<?= $_ENV['APP_URL'] ?>/images/stall_logo.svg" alt="STALL" id="top"></h1>
-            <form action="" method="get" id="top">
-                <input type="search"
-                    name="keyword"
-                    placeholder="タイトル・作者・システムetc">
-                <button type="submit">検索</button>
-            </form>
-            <div>
-                <a href="./mypage/index.php"><img src="<?= $_ENV['APP_URL'] ?>/images/mypage_icon.svg" alt="マイページ"></a>
-                <a href="./mypage/favorite.php"><img src="<?= $_ENV['APP_URL'] ?>/images/favorite_icon.svg" alt="お気に入り"></a>
-                <a href="./cart/index.php"><img src="<?= $_ENV['APP_URL'] ?>/images/cart_icon.svg" alt="カート"></a>
-            </div>
-        </div>
-    </header>
-
+    <?php require COMPONENTS_DIR . 'header.php'; ?>
     <main>
         <?php if ($worksIdError != ''): ?>
             <p><?= $worksIdError ?></p>
@@ -736,7 +728,7 @@ if (!isset($workId) || !is_numeric($workId)) {
                     width="200">
                 <div class="imageUploader">
                     <div class="imagesPreview"></div>
-                    <input type="file" name="thumbnail" class="imagesInput" accept=".jpg,.jpeg,.png,webp">
+                    <input type="file" name="thumbnail" class="imagesInput" accept=".jpg,.jpeg,.png,.webp">
                 </div>
                 <input type="submit" value="変更する">
             </form>

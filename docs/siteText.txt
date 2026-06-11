@@ -87,3 +87,28 @@ error_reporting(E_ALL);
     // ↓本番前に下のコメントアウトと入れ替える形で消す
     // echo $e->getMessage();
     // exit();
+
+
+    F4F4F4メイン白
+1A1A1A文字黒
+72708C灰紫
+8BB739黄緑
+
+$username様へ
+
+STALLへのユーザー登録が完了しました。
+
+
+下記URLよりSTALLの各種サービスをご利用いただけます。
+
+作品を投稿する
+http://stall/mypage/post
+
+作品をさがす
+http://stall/category/
+
+このメールにお心あたりがない場合は誠に恐れ入りますが
+破棄していただきますようお願いいたします。
+
+発行元：STALL　http://stall/
+(c)2026 STALL All Rights Reserved.

@@ -67,3 +67,308 @@ purchase
 id　した順
 user_id　したユーザー
 work_id　された作品
+
+
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- ホスト: mysql80-2.lolipop.lan
+-- 生成日時: 2026 年 6 月 10 日 19:44
+-- サーバのバージョン： 8.0.43
+-- PHP のバージョン: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+--
+-- データベース: `LAA1706258-scenallione`
+--
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` int UNSIGNED NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `favorite`
+--
+
+CREATE TABLE `favorite` (
+  `user_id` int UNSIGNED NOT NULL,
+  `work_id` int UNSIGNED NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `news`
+--
+
+CREATE TABLE `news` (
+  `id` int NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `body` text COLLATE utf8mb4_general_ci NOT NULL,
+  `image_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `category` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'お知らせ',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `purchase`
+--
+
+CREATE TABLE `purchase` (
+  `id` int UNSIGNED NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `work_id` int UNSIGNED NOT NULL,
+  `purchased_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `subcategories`
+--
+
+CREATE TABLE `subcategories` (
+  `id` int UNSIGNED NOT NULL,
+  `category_id` int UNSIGNED NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `tags`
+--
+
+CREATE TABLE `tags` (
+  `id` int UNSIGNED NOT NULL,
+  `category_id` int UNSIGNED NOT NULL,
+  `tag_name` varchar(20) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='タグ一覧';
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `users`
+--
+
+CREATE TABLE `users` (
+  `id` int UNSIGNED NOT NULL,
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `icon_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `profile_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `register_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `is_verified` tinyint(1) NOT NULL DEFAULT '0',
+  `is_banned` tinyint(1) NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `role` tinyint(1) NOT NULL DEFAULT '0',
+  `last_login_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `works`
+--
+
+CREATE TABLE `works` (
+  `id` int UNSIGNED NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `price` int UNSIGNED DEFAULT NULL,
+  `category_id` tinyint UNSIGNED NOT NULL,
+  `subcategory_id` smallint UNSIGNED NOT NULL,
+  `min_players` tinyint UNSIGNED NOT NULL DEFAULT '1',
+  `max_players` tinyint UNSIGNED NOT NULL,
+  `text_hours` tinyint UNSIGNED DEFAULT NULL,
+  `voice_hours` tinyint UNSIGNED DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `thumbnail_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `posted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `view_count` int NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `works_images`
+--
+
+CREATE TABLE `works_images` (
+  `id` int UNSIGNED NOT NULL,
+  `work_id` int UNSIGNED NOT NULL,
+  `image_name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `display_order` tinyint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='サンプル・トレーラーのクルーセル用';
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `works_tag`
+--
+
+CREATE TABLE `works_tag` (
+  `work_id` int UNSIGNED NOT NULL,
+  `tag_id` int UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='タグと作品の紐付け';
+
+--
+-- ダンプしたテーブルのインデックス
+--
+
+--
+-- テーブルのインデックス `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- テーブルのインデックス `favorite`
+--
+ALTER TABLE `favorite`
+  ADD PRIMARY KEY (`user_id`,`work_id`),
+  ADD KEY `work_id` (`work_id`);
+
+--
+-- テーブルのインデックス `news`
+--
+ALTER TABLE `news`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- テーブルのインデックス `purchase`
+--
+ALTER TABLE `purchase`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `work_id` (`work_id`);
+
+--
+-- テーブルのインデックス `subcategories`
+--
+ALTER TABLE `subcategories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- テーブルのインデックス `tags`
+--
+ALTER TABLE `tags`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- テーブルのインデックス `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- テーブルのインデックス `works`
+--
+ALTER TABLE `works`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- テーブルのインデックス `works_images`
+--
+ALTER TABLE `works_images`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- テーブルのインデックス `works_tag`
+--
+ALTER TABLE `works_tag`
+  ADD PRIMARY KEY (`work_id`,`tag_id`);
+
+--
+-- ダンプしたテーブルの AUTO_INCREMENT
+--
+
+--
+-- テーブルの AUTO_INCREMENT `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- テーブルの AUTO_INCREMENT `news`
+--
+ALTER TABLE `news`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- テーブルの AUTO_INCREMENT `purchase`
+--
+ALTER TABLE `purchase`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- テーブルの AUTO_INCREMENT `subcategories`
+--
+ALTER TABLE `subcategories`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- テーブルの AUTO_INCREMENT `tags`
+--
+ALTER TABLE `tags`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- テーブルの AUTO_INCREMENT `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- テーブルの AUTO_INCREMENT `works`
+--
+ALTER TABLE `works`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- テーブルの AUTO_INCREMENT `works_images`
+--
+ALTER TABLE `works_images`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- ダンプしたテーブルの制約
+--
+
+--
+-- テーブルの制約 `favorite`
+--
+ALTER TABLE `favorite`
+  ADD CONSTRAINT `favorite_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `favorite_ibfk_2` FOREIGN KEY (`work_id`) REFERENCES `works` (`id`) ON DELETE CASCADE;
+
+--
+-- テーブルの制約 `purchase`
+--
+ALTER TABLE `purchase`
+  ADD CONSTRAINT `purchase_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `purchase_ibfk_2` FOREIGN KEY (`work_id`) REFERENCES `works` (`id`) ON DELETE CASCADE;
+COMMIT;

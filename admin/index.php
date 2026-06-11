@@ -157,23 +157,7 @@ name
 </head>
 
 <body>
-    <header>
-        <div class="header">
-            <h1><img src="<?= $_ENV['APP_URL'] ?>/images/stall_logo.svg" alt="STALL" id="top"></h1>
-            <form action="" method="get" id="top">
-                <input type="search"
-                    name="keyword"
-                    placeholder="タイトル・作者・システムetc">
-                <button type="submit">検索</button>
-            </form>
-            <div>
-                <a href="./mypage/index.php"><img src="<?= $_ENV['APP_URL'] ?>/images/mypage_icon.svg" alt="マイページ"></a>
-                <a href="./mypage/favorite.php"><img src="<?= $_ENV['APP_URL'] ?>/images/favorite_icon.svg" alt="お気に入り"></a>
-                <a href="./cart/index.php"><img src="<?= $_ENV['APP_URL'] ?>/images/cart_icon.svg" alt="カート"></a>
-            </div>
-        </div>
-    </header>
-
+    <?php require COMPONENTS_DIR . 'header.php'; ?>
     <main>
         <?php if ($successText !== ''): ?>
             <p><?= $successText ?></p>
@@ -206,8 +190,9 @@ name
             <br>
             <input type="submit" value="追加">
         </form>
+        <p><a href="<?= $_ENV['APP_URL'] ?>/admin/newsadd.php">お知らせ追加</a></p>
     </main>
-    <script src="../common/script.js"></script>
+    <script src="<?= $_ENV['APP_URL'] ?>/common/script.js"></script>
 </body>
 
 </html>

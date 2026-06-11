@@ -1,7 +1,63 @@
 <?php
-require_once __DIR__ . '/./common/bootstrap.php';
-require_once __DIR__ . '/./common/dbConnect.php';
+require_once __DIR__ . '/common/bootstrap.php';
+require_once __DIR__ . '/common/dbConnect.php';
 
+$categoryId = isset($_GET['category']) ? (int)$_GET['category'] : 0;
+$validCategories = [0 => '全て', 1 => 'シナリオ', 2 => '素材', 3 => 'その他'];
+
+$works = [];
+$rankingWorks = [];
+$latestNews = [];
+$categoryNames = [1 => 'シナリオ', 2 => '素材', 3 => 'その他'];
+
+try {
+    $dbh = dbConnect();
+
+    // 作品一覧（カテゴリフィルタ付き）
+    if ($categoryId > 0 && isset($validCategories[$categoryId])) {
+        $worksStmt = $dbh->prepare(
+            'SELECT w.id, w.title, w.price, w.category_id, w.thumbnail_name,
+                    u.username, w.posted_at,
+                    (SELECT COUNT(*) FROM favorite WHERE work_id = w.id) AS favorite_count
+             FROM works w
+             JOIN users u ON w.user_id = u.id
+             WHERE w.category_id = :category_id
+             ORDER BY w.posted_at DESC
+             LIMIT 20'
+        );
+        $worksStmt->execute(['category_id' => $categoryId]);
+    } else {
+        $worksStmt = $dbh->query(
+            'SELECT w.id, w.title, w.price, w.category_id, w.thumbnail_name,
+                    u.username, w.posted_at,
+                    (SELECT COUNT(*) FROM favorite WHERE work_id = w.id) AS favorite_count
+             FROM works w
+             JOIN users u ON w.user_id = u.id
+             ORDER BY w.posted_at DESC
+             LIMIT 20'
+        );
+    }
+    $works = $worksStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // 閲覧数ランキング（上位5件）
+    $rankingStmt = $dbh->query(
+        'SELECT w.id, w.title, w.price, w.category_id, w.thumbnail_name,
+                u.username, w.view_count
+         FROM works w
+         JOIN users u ON w.user_id = u.id
+         ORDER BY w.view_count DESC, w.posted_at DESC
+         LIMIT 5'
+    );
+    $rankingWorks = $rankingStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // お知らせ最新3件
+    $newsStmt = $dbh->query(
+        'SELECT id, title, created_at FROM news ORDER BY created_at DESC LIMIT 3'
+    );
+    $latestNews = $newsStmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -14,32 +70,98 @@ require_once __DIR__ . '/./common/dbConnect.php';
 </head>
 
 <body>
-    <header>
-        <div class="header">
-            <h1><img src="<?= $_ENV['APP_URL'] ?>/images/stall_logo.svg" alt="STALL" id="top"></h1>
-            <form action="" method="get" id="top">
-                <input type="search"
-                    name="keyword"
-                    placeholder="タイトル・作者・システムetc">
-                <button type="submit">検索</button>
-            </form>
-            <div>
-                <a href="./mypage/index.php"><img src="<?= $_ENV['APP_URL'] ?>/images/mypage_icon.svg" alt="マイページ"></a>
-                <a href="./mypage/favorite.php"><img src="<?= $_ENV['APP_URL'] ?>/images/favorite_icon.svg" alt="お気に入り"></a>
-                <a href="./cart/index.php"><img src="<?= $_ENV['APP_URL'] ?>/images/cart_icon.svg" alt="カート"></a>
+    <?php require COMPONENTS_DIR . 'header.php'; ?>
+    <main>
+        <div class="carousel">
+            <div class="carouselSlides">
+                <img src="<?= $_ENV['APP_URL'] ?>/images/topview1.webp" alt="トップビュー" class="topview carouselSlide active">
+                <img src="<?= $_ENV['APP_URL'] ?>/images/topview2.webp" alt="トップビュー" class="topview carouselSlide">
+                <img src="<?= $_ENV['APP_URL'] ?>/images/topview3.webp" alt="トップビュー" class="topview carouselSlide">
+            </div>
+            <div class="carouselIndicators">
+                <button class="carouselDot active" data-index="0"></button>
+                <button class="carouselDot" data-index="1"></button>
+                <button class="carouselDot" data-index="2"></button>
             </div>
         </div>
-    </header>
-    <main>
-        <?php if (!empty($_SESSION['username'])): ?>
-            <p>ようこそ、<?= $_SESSION['username']  ?>さん</p>
-        <?php else: ?>
-            <p>ようこそ、ゲストさん</p>
+
+        <section>
+            <h2>お知らせ</h2>
+            <?php foreach ($latestNews as $newsItem): ?>
+                <p><a href="<?= h($_ENV['APP_URL']) ?>/news?id=<?= h($newsItem['id']) ?>"><?= h(substr($newsItem['created_at'], 0, 10)) ?>　<?= h($newsItem['title']) ?></a></p>
+            <?php endforeach; ?>
+            <p><a href="<?= h($_ENV['APP_URL']) ?>/news/news-list.php">お知らせ一覧</a></p>
+        </section>
+
+        <?php if (!empty($rankingWorks)): ?>
+            <section class="center">
+                <div class="moreTextFlex">
+                    <h2>閲覧数ランキング</h2>
+                    <p><a href="">もっと見る</a></p>
+                </div>
+                <ol class="rankingList">
+                    <?php foreach ($rankingWorks as $rank): ?>
+                        <li class="worksCardColumn">
+                            <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($rank['id']) ?>">
+                                <div>
+                                    <img src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($rank['thumbnail_name']) ?>"
+                                        alt="" class="thumbnailImage">
+                                    <div class="noMargin">
+                                        <p class="cardCategoryIcon"><?= h($categoryNames[$rank['category_id']] ?? '不明') ?></p>
+                                    </div>
+                                    <div class="cardDescription">
+                                        <p class="cardTitle"><?= h($rank['title']) ?></p>
+                                        <p><?= h($rank['username']) ?></p>
+                                        <p><?= $rank['price'] === null ? '無料' : h($rank['price']) . '円' ?></p>
+                                        <p>閲覧数: <?= h($rank['view_count']) ?></p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ol>
+            </section>
         <?php endif; ?>
-
-        <p>トップページ</p>
-
+        <section>
+            <h2>お知らせ</h2>
+        </section>
+        <section>
+            <h2>新着作品一覧</h2>
+            <div class="categoryFilter">
+                <?php foreach ($validCategories as $id => $name): ?>
+                    <a href="<?= h($_ENV['APP_URL']) ?>?category=<?= $id ?>"
+                        class="filterButton <?= $categoryId === $id ? 'active' : '' ?>">
+                        <?= h($name) ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+            <p>クリックで詳細画面に移動します</p>
+            <?php if (!empty($works)): ?>
+                <div class="worksList">
+                    <?php foreach ($works as $work): ?>
+                        <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($work['id']) ?>">
+                            <div class="worksCard">
+                                <img src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($work['thumbnail_name']) ?>"
+                                    alt="" class="thumbnailImage">
+                                <div>
+                                    <p><?= h($categoryNames[$work['category_id']] ?? '不明') ?></p>
+                                    <p><?= h($work['title']) ?></p>
+                                    <p><?= h($work['username']) ?></p>
+                                    <p><?= $work['price'] === null ? '無料' : h($work['price']) . '円' ?></p>
+                                    <p>♡ <?= h($work['favorite_count']) ?></p>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p>まだ作品がありません。</p>
+            <?php endif; ?>
+        </section>
     </main>
+    <footer>
+        <a href="<?= $_ENV['APP_URL'] ?>#top"><img src="<?= $_ENV['APP_URL'] ?>/images/top_button.svg" alt="ページトップへ" id="backToTop"></a>
+    </footer>
     <script src="<?= $_ENV['APP_URL'] ?>/common/script.js"></script>
 </body>
 

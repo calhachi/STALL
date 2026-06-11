@@ -192,23 +192,7 @@ try {
 </head>
 
 <body>
-    <header>
-        <div class="header">
-            <img src="<?= $_ENV['APP_URL'] ?>/images/stall_logo.svg" alt="STALL" id="top">
-            <form action="" method="get">
-                <input type="search"
-                    name="keyword"
-                    placeholder="タイトル・作者・システムetc">
-                <button type="submit">検索</button>
-            </form>
-            <div>
-                <a href="<?= $_ENV['APP_URL'] ?>/mypage/index.php"><img src="<?= $_ENV['APP_URL'] ?>/images/mypage_icon.svg" alt="マイページ"></a>
-                <a href="<?= $_ENV['APP_URL'] ?>/mypage/favorite.php"><img src="<?= $_ENV['APP_URL'] ?>/images/favorite_icon.svg" alt="お気に入り"></a>
-                <a href="<?= $_ENV['APP_URL'] ?>/cart/index.php"><img src="<?= $_ENV['APP_URL'] ?>/images/cart_icon.svg" alt="カート"></a>
-            </div>
-        </div>
-    </header>
-    <main>
+    <?php require COMPONENTS_DIR . 'header.php'; ?> <main>
         <?php if ($isSuccess === 1): ?>
             <p>投稿に成功しました。</p>
         <?php endif; ?>
