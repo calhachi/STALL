@@ -55,7 +55,7 @@ try {
                     <h2>アカウントメニュー</h2>
                     <ul>
                         <li><a href="<?= $_ENV['APP_URL'] ?>/mypage/fix">会員情報変更</a></li>
-                        <li>購入履歴</li>
+                        <li><a href="<?= $_ENV['APP_URL'] ?>/mypage/orders">購入履歴</a></li>
                         <li><a href="<?= $_ENV['APP_URL'] ?>/mypage/favorite">お気に入り一覧</a></li>
                         <li>
                             <form action="<?= $_ENV['APP_URL'] ?>/login/logout" method="post">

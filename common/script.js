@@ -256,36 +256,6 @@ uploaders.forEach(function (uploader) {
 });
 
 
-// トップページカルーセル
-const carouselSlides = document.querySelectorAll('.carouselSlide');
-const carouselDots = document.querySelectorAll('.carouselDot');
-
-if (carouselSlides.length > 0) {
-    let current = 0;
-    let timer;
-
-    function goTo(index) {
-        carouselSlides[current].classList.remove('active');
-        carouselDots[current].classList.remove('active');
-        current = index;
-        carouselSlides[current].classList.add('active');
-        carouselDots[current].classList.add('active');
-    }
-
-    function startTimer() {
-        timer = setInterval(() => goTo((current + 1) % carouselSlides.length), 4000);
-    }
-
-    carouselDots.forEach(dot => {
-        dot.addEventListener('click', function () {
-            clearInterval(timer);
-            goTo(parseInt(this.dataset.index));
-            startTimer();
-        });
-    });
-
-    startTimer();
-}
 
 // 画面遷移なしで作品削除
 const deleteButtons = document.querySelectorAll('.deleteButton');

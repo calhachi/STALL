@@ -1,0 +1,209 @@
+❯ あくまでポートフォリオサイトなので実際のカード番号を管理するのは荷が重いと思っています。実在のカード情報を使わずに流れだけ学べる方法はありませんか？
+
+2つ現実的な選択肢があります。
+
+---
+選択肢A: Stripe のテストモード（推奨）
+
+Stripe はアカウント作成直後からテスト環境が使えます。
+
+- ダミーカード番号（4242 4242 4242 4242）が公式に用意されており、本物のカードは一切不要
+- 実際の決済フロー（カード入力 → 認証 → webh べる
+選択肢A: Stripe のテストモード（推奨）
+
+Stripe はアカウント作成直後からテスト環境が
+
+- ダミーカード番号（4242 4242 4242 4242）が公式に用意されており、本物のカードは一切不要
+- 実際の決済フロー（カード入力 → 認証 → webhook → 購入完了）を本番同様に学べる
+- テストモードと本番モードはAPIキーで切り替えるだけなので、学習後にそのまま本番に使えるコードになる
+- ポートフォリオとして「Stripe 連携済み」と書けるのが強み
+
+選択肢B: モック決済（最小実装）
+
+決済処理を省いて「購入するボタンを押したら p だけにする方法です。
+
+- 実装が最も簡単で、購入フロー・ダウンロード配信・購入履歴といった前後のロジックに集中できる
+- ポートフォリオとしては「決済部分はモック、 と説明すればOK
+
+---
+おすすめはAです。 Stripe はドキュメントが日本語対応していて、stripe-php ライブラリを composer で入れるだけで始められます。テストモードなら費用もゼロです。
+
+ただ Stripe 連携は実装ボリュームが増えるので、先にBでフロー全体（確認画面→完了画面→ダウンロード→購入履歴）を作り切ってから、決済部分だけStripeに差し替えるという順番が学習効率は高いです。どちらの方向で進めますか？
+
+
+if (empty($purchasedTitles)) {
+… +41 lines
+
+最後にCSSを追加します。
+    gap: 24px;
+    padding: 24px 0 32px;
+    border-top: 2px solid #CDD3DB;
+    margin-top: 8px;
+}
+
+.cartTotal {
+}
+
+a.cartBackLink {
+    font-size: 0.9em;
+    color: #555;
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+a.cartBackLink:hover {
+    color: #333;
+}
+
+p.confirmLead {
+    margin-bottom: 16px;
+.purchasedTitleList {
+    list-style: none;
+.purchasedTitleList li:first-child {
+    border-top: 1px solid #e0e0e0;
+}
+
+.purchaseCompleteActions {
+    display: flex;
+    justify-content: center;
+実装完了です。
+
+---
+画面遷移と各ファイルの役割
+
+cart/index.php
+  └→「購入手続きへ」ボタン（合計金額も表示・削除で動的更新）
+      └→ purchase/confirm.php
+              カート内作品一覧・合計・「購入する」ボタン
+          └→ api/checkout.php（POST受信・DB処理）
+                  ・既に購入済みの作品を除外
+                  ・トランザクションで purchase INSERT → carts DELETE
+                  ・完了タイトルをセッションに格納
+              └→ purchase/complete.php
+                      購入した作品タイトル一覧を表示
+
+Stripe差し替え時の手順
+
+api/checkout.php のコメント ↓ Stripe差し替え時はここまでの処理を〜 の位置に Stripe の決済処理を挟むだけで対応できます。具体的に
+    border-radius: 4px;
+}
+
+/* ↑cart用―――――――――――――――――――――――――― */
+ No newline at end of file
+.cartFooter {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 0 32px;
+    border-top: 2px solid #CDD3DB;
+    margin-top: 8px;
+}
+
+.cartTotal {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.cartFooter .cartButton.cartProceedButton {
+    width: auto;
+    padding: 14px 40px;
+}
+
+a.cartBackLink {
+    font-size: 0.9em;
+    color: #555;
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+a.cartBackLink:hover {
+    color: #333;
+}
+
+p.confirmLead {
+    margin-bottom: 16px;
+    color: #555;
+}
+
+/* ↑cart用―――――――――――――――――――――――――― */
+/* ↓purchase/complete用―――――――――――――――――――――――――― */
+
+.purchaseCompleteWrap {
+    text-align: center;
+    padding: 60px 0 80px;
+}
+
+.purchaseCompleteIcon {
+    font-size: 4rem;
+    color: #5C9E5C;
+    margin: 0 0 8px;
+}
+
+.purchaseCompleteTitle {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 0 0 12px;
+}
+
+.purchaseCompleteLead {
+    color: #555;
+    margin-bottom: 24px;
+}
+
+.purchasedTitleList {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 40px;
+    max-width: 480px;
+    text-align: left;
+}
+
+.purchasedTitleList li {
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.95em;
+}
+
+.purchasedTitleList li:first-child {
+    border-top: 1px solid #e0e0e0;
+}
+
+.purchaseCompleteActions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+}
+
+.purchaseCompleteActions .cartButton.cartProceedButton {
+    width: auto;
+    padding: 14px 40px;
+}
+
+/* ↑purchase/complete用――――――――――――
+ No newline at end of file
+
+実装完了です。
+
+---
+画面遷移と各ファイルの役割
+
+cart/index.php
+  └→「購入手続きへ」ボタン（合計金額も表示・削除で動的更新）
+      └→ purchase/confirm.php
+              カート内作品一覧・合計・「購入する」ボタン
+          └→ api/checkout.php（POST受信・DB処理）
+                  ・既に購入済みの作品を除外
+                  ・トランザクションで purchase INSERT → carts DELETE
+                  ・完了タイトルをセッション
+              └→ purchase/complete.php
+                      購入した作品タイトル一覧を表示
+
+Stripe差し替え時の手順
+
+api/checkout.php のコメント ↓ Stripe差し替えに Stripeの決済処理を挟むだけで対応できます。具体的には：
+1. DB処理の前に Stripe の PaymentIntent 作成
+2. 決済成功の Webhook を受けた後に purchase
+3. confirm.php の「購入する」ボタンを Stripe の JS（Stripe.js）に差し替え

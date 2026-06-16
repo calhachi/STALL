@@ -3,7 +3,7 @@ body {
 }
 
 main {
-    width: 90%;
+    width: 80%;
     margin-left: auto;
     margin-right: auto;
     background-color: #fff;
@@ -60,7 +60,8 @@ div.moreTextFlex {
     gap: 20px;
 }
 
-ol.rankingList {
+ol.rankingList,
+div.rankingList {
     /* width: 100vw; */
     display: flex;
     flex-wrap: nowrap;
@@ -73,7 +74,8 @@ ol.rankingList {
     color: black;
 }
 
-li.worksCardColumn {
+li.worksCardColumn,
+div.worksCardColumn {
     position: relative;
     list-style: none;
     /* デフォルトの番号を消す */
@@ -125,40 +127,6 @@ div.cardDescription p {
     font-weight: bold;
 }
 
-.carouselSlides {
-    display: grid;
-}
-
-.carouselSlide {
-    grid-area: 1 / 1;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-}
-
-.carouselSlide.active {
-    opacity: 1;
-}
-
-.carouselIndicators {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.carouselDot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #ccc;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-}
-
-.carouselDot.active {
-    background-color: #555;
-}
 
 img#backToTop {
     position: fixed;
@@ -246,3 +214,576 @@ img#preview {
 }
 
 /* ↑login用―――――――――――――――――――――――――― */
+/* ↓news用―――――――――――――――――――――――――― */
+
+a.newsCardLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+div.newsCard {
+    background-color: #fff;
+    border: 2px solid #CDD3DB;
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+}
+
+a.newsCardLink:hover div.newsCard {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+p.newsCardDate {
+    font-size: 0.85em;
+    color: #888;
+    margin: 0 0 8px 0;
+}
+
+div.newsCardBody {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+img.newsCardImage {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+div.newsCardText {
+    flex: 1;
+}
+
+h2.newsCardTitle {
+    font-size: 1.05em;
+    margin: 6px 0 6px 0;
+}
+
+p.newsCardExcerpt {
+    font-size: 0.88em;
+    color: #555;
+    margin: 0;
+    line-height: 1.6;
+}
+
+nav.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+}
+
+a.pageLink,
+span.pageLink {
+    display: inline-block;
+    min-width: 2em;
+    padding: 4px 10px;
+    border: 1px solid #A9B0BA;
+    border-radius: 4px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9em;
+    background-color: #fff;
+}
+
+a.pageLink:hover {
+    background-color: #88BCFF;
+    border-color: #5599ee;
+    color: #fff;
+}
+
+span.pageLink.current {
+    background-color: #88BCFF;
+    border-color: #5599ee;
+    color: #fff;
+    font-weight: bold;
+}
+
+span.pageLink.disabled {
+    color: #bbb;
+    border-color: #ddd;
+    cursor: default;
+}
+
+/* ↑news用―――――――――――――――――――――――――― */
+/* ↓works/detail用―――――――――――――――――――――――――― */
+
+article.workDetail {
+    padding: 40px 0 60px;
+}
+
+.workDetailTop {
+    width: 100%;
+    display: flex;
+    gap: 48px;
+    align-items: flex-start;
+    margin-bottom: 48px;
+}
+
+/* 左：ギャラリー */
+.workGallery {
+    flex: 0 0 48%;
+    max-width: 48%;
+}
+
+.workMainImageWrap {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background-color: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.workMainImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.workTrailersOuter {
+    position: relative;
+    margin-top: 12px;
+    width: 100%;
+}
+
+.workTrailers {
+    width: 100%;
+    overflow: hidden;
+}
+
+.trailerNav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 32px;
+    height: 32px;
+    font-size: 1.4rem;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+}
+
+#trailerPrev {
+    left: 0;
+}
+
+#trailerNext {
+    right: 0;
+}
+
+.trailerNav:hover {
+    background: #f0f0f0;
+}
+
+.trailerNavInactive {
+    opacity: 0.5;
+}
+
+.trailerTrack {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 16px) / 3);
+    gap: 8px;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.trailerThumb {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.trailerThumb:hover {
+    border-color: #88BCFF;
+}
+
+.trailerThumb.active {
+    border-color: #5599ee;
+}
+
+/* 右：作品情報 */
+.workInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.categoryBadge {
+    display: inline-block;
+    background-color: #E84040;
+    color: #fff;
+    font-size: 0.85em;
+    border-radius: 20px;
+    padding: 4px 16px;
+    align-self: flex-start;
+}
+
+.detailDate {
+    font-size: 0.85em;
+    color: #666;
+    margin: 0;
+}
+
+.detailTitle {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 4px 0;
+    line-height: 1.3;
+}
+
+.detailAuthor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detailAuthorIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.detailAuthorIconEmpty {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ccc;
+    flex-shrink: 0;
+}
+
+.detailAuthorName {
+    font-size: 0.95em;
+}
+
+.detailPrice {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 4px 0;
+}
+
+.workActions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cartButton {
+    display: block;
+    width: 100%;
+    padding: 14px 0;
+    background-color: #5BB8D4;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background-color 0.2s;
+}
+
+.cartButton:hover {
+    background-color: #3D9FBA;
+}
+
+.editButton {
+    background-color: #888;
+}
+
+.editButton:hover {
+    background-color: #666;
+}
+
+.downloadButton {
+    background-color: #5C9E5C;
+}
+
+.downloadButton:hover {
+    background-color: #467A46;
+}
+
+.favoriteArea {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.favoriteButton {
+    font-size: 1.6rem;
+    color: #ccc;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.favoriteButton.active {
+    color: #f5c518;
+}
+
+.favoriteButton:hover:not(:disabled) {
+    color: #f5c518;
+}
+
+.favoriteButton:disabled {
+    color: #ddd;
+    cursor: default;
+}
+
+/* 下段：詳細情報 */
+.workDetailBottom {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 32px;
+}
+
+.detailInfoBlock {
+    margin-bottom: 20px;
+}
+
+.detailInfoLabel {
+    font-weight: bold;
+    font-size: 0.95em;
+    margin: 0 0 4px 0;
+}
+
+.detailInfoValue {
+    margin: 0;
+    font-size: 0.95em;
+}
+
+.workTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.tag {
+    display: inline-block;
+    border: 1px solid #A9B0BA;
+    border-radius: 16px;
+    padding: 3px 12px;
+    font-size: 0.85em;
+    color: #444;
+}
+
+.workDescription {
+    margin-top: 24px;
+    line-height: 1.8;
+    color: #333;
+}
+
+/* ↑works/detail用―――――――――――――――――――――――――― */
+/* ↓cart用―――――――――――――――――――――――――― */
+
+.cartAddedMessage {
+    background-color: #e6f4ea;
+    border: 1px solid #7ec898;
+    border-radius: 4px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    color: #2d6a4f;
+    font-size: 0.95em;
+}
+
+h2.cartHeading {
+    margin-top: 32px;
+    margin-bottom: 24px;
+}
+
+.cartItem {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background-color: #F2F6FC;
+    border: 2px solid #CDD3DB;
+    border-radius: 4px;
+    padding: 16px 24px;
+    margin-bottom: 16px;
+}
+
+.cartItemThumb {
+    width: 160px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.cartItemInfo {
+    flex: 1;
+}
+
+a.cartItemTitle {
+    font-size: 1.05em;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 6px;
+}
+
+a.cartItemTitle:hover {
+    text-decoration: underline;
+}
+
+.cartItemAuthor {
+    font-size: 0.9em;
+    color: #666;
+    margin: 0 0 6px 0;
+}
+
+.cartItemPrice {
+    font-size: 1.15em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.ordersDownloadButton {
+    flex-shrink: 0;
+    width: auto;
+    padding: 8px 16px;
+    font-size: 0.9em;
+}
+
+.cartRemoveButton {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    font-size: 0.9em;
+    cursor: pointer;
+    color: white;
+    background-color: #ed5353;
+    border: 2px solid #7c3737;
+    border-radius: 4px;
+}
+
+.cartFooter {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 0 32px;
+    border-top: 2px solid #CDD3DB;
+    margin-top: 8px;
+}
+
+.cartTotal {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.cartFooter .cartButton.cartProceedButton {
+    width: auto;
+    padding: 14px 40px;
+}
+
+a.cartBackLink {
+    font-size: 0.9em;
+    color: #555;
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+a.cartBackLink:hover {
+    color: #333;
+}
+
+p.confirmLead {
+    margin-bottom: 16px;
+    color: #555;
+}
+
+/* ↑cart用―――――――――――――――――――――――――― */
+/* ↓purchase/complete用―――――――――――――――――――――――――― */
+
+.purchaseCompleteWrap {
+    text-align: center;
+    padding: 60px 0 80px;
+}
+
+.purchaseCompleteIcon {
+    font-size: 4rem;
+    color: #5C9E5C;
+    margin: 0 0 8px;
+}
+
+.purchaseCompleteTitle {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 0 0 12px;
+}
+
+.purchaseCompleteLead {
+    color: #555;
+    margin-bottom: 24px;
+}
+
+.purchasedTitleList {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 40px;
+    max-width: 480px;
+    text-align: left;
+}
+
+.purchasedTitleList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.95em;
+}
+
+.purchasedTitleList li:first-child {
+    border-top: 1px solid #e0e0e0;
+}
+
+.purchaseCompleteActions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+}
+
+.purchaseCompleteActions .cartButton.cartProceedButton {
+    width: auto;
+    padding: 14px 40px;
+}
+
+/* ↑purchase/complete用―――――――――――――――――――――――――― */

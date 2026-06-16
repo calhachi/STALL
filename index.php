@@ -8,6 +8,7 @@ $validCategories = [0 => '全て', 1 => 'シナリオ', 2 => '素材', 3 => 'そ
 $works = [];
 $rankingWorks = [];
 $latestNews = [];
+$banners = [];
 $categoryNames = [1 => 'シナリオ', 2 => '素材', 3 => 'その他'];
 
 try {
@@ -50,7 +51,19 @@ try {
     );
     $rankingWorks = $rankingStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // お知らせ最新3件
+    // 公開中バナー（表示順昇順）
+    $bannerStmt = $dbh->prepare(
+        'SELECT id, title, image_path, link_url
+         FROM banners
+         WHERE is_active = 1
+           AND (start_at IS NULL OR start_at <= NOW())
+           AND (end_at   IS NULL OR end_at   >= NOW())
+         ORDER BY display_order ASC, id ASC'
+    );
+    $bannerStmt->execute();
+    $banners = $bannerStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // お知らせ最新3件（CLAUDE.md: newsクエリは他クエリより後ろに配置）
     $newsStmt = $dbh->query(
         'SELECT id, title, created_at FROM news ORDER BY created_at DESC LIMIT 3'
     );
@@ -67,23 +80,40 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STALL | TRPGシナリオ販売サイト</title>
     <link rel="stylesheet" href="<?= $_ENV['APP_URL'] ?>/common/style.css">
+    <?php if (!empty($banners)): ?>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <style>
+        .topCarousel { width: 100%; }
+        .topCarousel .swiper-slide img { width: 100%; height: auto; display: block; }
+    </style>
+    <?php endif; ?>
 </head>
 
 <body>
     <?php require COMPONENTS_DIR . 'header.php'; ?>
     <main>
-        <div class="carousel">
-            <div class="carouselSlides">
-                <img src="<?= $_ENV['APP_URL'] ?>/images/topview1.webp" alt="トップビュー" class="topview carouselSlide active">
-                <img src="<?= $_ENV['APP_URL'] ?>/images/topview2.webp" alt="トップビュー" class="topview carouselSlide">
-                <img src="<?= $_ENV['APP_URL'] ?>/images/topview3.webp" alt="トップビュー" class="topview carouselSlide">
+        <?php if (!empty($banners)): ?>
+        <div class="swiper topCarousel">
+            <div class="swiper-wrapper">
+                <?php foreach ($banners as $bnr): ?>
+                <div class="swiper-slide">
+                    <?php if ($bnr['link_url'] !== ''): ?>
+                    <a href="<?= h($bnr['link_url']) ?>">
+                        <img src="<?= h($_ENV['APP_URL']) ?>/images/banners/<?= h($bnr['image_path']) ?>"
+                             alt="<?= h($bnr['title']) ?>">
+                    </a>
+                    <?php else: ?>
+                    <img src="<?= h($_ENV['APP_URL']) ?>/images/banners/<?= h($bnr['image_path']) ?>"
+                         alt="<?= h($bnr['title']) ?>">
+                    <?php endif; ?>
+                </div>
+                <?php endforeach; ?>
             </div>
-            <div class="carouselIndicators">
-                <button class="carouselDot active" data-index="0"></button>
-                <button class="carouselDot" data-index="1"></button>
-                <button class="carouselDot" data-index="2"></button>
-            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
         </div>
+        <?php endif; ?>
 
         <section>
             <h2>お知らせ</h2>
@@ -163,6 +193,17 @@ try {
         <a href="<?= $_ENV['APP_URL'] ?>#top"><img src="<?= $_ENV['APP_URL'] ?>/images/top_button.svg" alt="ページトップへ" id="backToTop"></a>
     </footer>
     <script src="<?= $_ENV['APP_URL'] ?>/common/script.js"></script>
+    <?php if (!empty($banners)): ?>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        new Swiper('.topCarousel', {
+            loop: true,
+            autoplay: { delay: 4000, disableOnInteraction: false },
+            pagination: { el: '.swiper-pagination', clickable: true },
+            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+        });
+    </script>
+    <?php endif; ?>
 </body>
 
 </html>

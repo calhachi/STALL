@@ -97,10 +97,38 @@ $_SESSION['postWork']    // 作品投稿確認ページ用一時データ
 - `works_images`: id, work_id, image_name, display_order
 - `works_tag`: work_id, tag_id
 - `categories` / `subcategories` / `tags`: カテゴリ階層（categories → subcategories → tags はすべて category_id で紐付け）
+- `news`: id, title, body, image_name（nullable）, category（'お知らせ'/'アップデート'/'イベント'）, created_at, updated_at
 
 ### カテゴリ構造
 
 カテゴリID=1（シナリオ）の場合のみ `#trpgOnlyFields`（プレイ人数・プレイ時間）を表示する。この判定はサーバーサイド（`mypage/post.php`）とクライアントサイド（`common/script.js`）の両方で行う。
+
+### 画像ファイルの格納先
+
+| ディレクトリ | 用途 |
+|---|---|
+| `userdata/` | ユーザーがアップロードしたファイル（`.gitignore` 対象） |
+| `images/` | サイト本体で使用する画像（git管理対象） |
+
+`images/news/` にお知らせのアイキャッチ画像を格納する。ファイル名は `news{id}.{拡張子}`（DBのidが確定後にINSERTしてから保存・UPDATE）。
+
+### 管理機能 (`admin/`)
+
+`$_SESSION['role']` が `1`（admin）のユーザーのみアクセス可能。`role === 0` の場合はトップへリダイレクト。
+
+| ファイル | 役割 |
+|---|---|
+| `admin/index.php` | 管理画面トップ |
+| `admin/newsadd.php` | お知らせ追加。newsテーブルにINSERT。画像は `images/news/` に保存 |
+
+### お知らせ機能 (`news/`)
+
+| ファイル | 役割 |
+|---|---|
+| `news/index.php` | お知らせ詳細。`GET id` でnewsテーブルから1件取得して表示 |
+| `news/news-list.php` | お知らせ一覧 |
+
+`index.php`（トップページ）の「お知らせ」セクションでは最新3件を取得して表示する。newsクエリは他のクエリより**後ろ**に配置すること（失敗時に他セクションへの影響を防ぐため）。
 
 ### API (`api/`)
 

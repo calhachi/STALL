@@ -143,10 +143,10 @@ $hasFilter = $keyword !== '' || $filterCat > 0 || $priceType !== '';
         <?php endif; ?>
 
         <?php if (!empty($works)): ?>
-            <div class="worksList">
+            <div class="rankingList">
                 <?php foreach ($works as $work): ?>
                     <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($work['id']) ?>">
-                        <div class="worksCard">
+                        <div class="worksCardColumn">
                             <img src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($work['thumbnail_name']) ?>"
                                 alt="" class="thumbnailImage">
                             <div>

@@ -1,5 +1,35 @@
 データテーブル
 
+banners
+    id INT AUTO_INCREMENT PRIMARY KEY
+    title バナータイトル VARCHAR(255)
+    image_path 画像ファイル名 VARCHAR(255) -- banner{id}.拡張子 → images/banners/
+    link_url リンク先URL VARCHAR(2083) NOT NULL DEFAULT ''
+    display_order 表示順（小さいほど先に表示） INT NOT NULL DEFAULT 0
+    start_at 公開開始日時 DATETIME DEFAULT NULL（NULLは即時公開）
+    end_at 公開終了日時 DATETIME DEFAULT NULL（NULLは無期限）
+    is_active 公開状態 TINYINT(1) NOT NULL DEFAULT 1（1=公開, 0=非公開）
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    INDEX idx_active_order (is_active, display_order)
+
+SQL:
+CREATE TABLE `banners` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `image_path` varchar(255) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `link_url` varchar(2083) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `display_order` int NOT NULL DEFAULT '0',
+  `start_at` datetime DEFAULT NULL,
+  `end_at` datetime DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_active_order` (`is_active`,`display_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
 users   12
     id　登録順のid INT
     username ユーザー名 varchar(50)
@@ -74,7 +104,7 @@ work_id　された作品
 -- https://www.phpmyadmin.net/
 --
 -- ホスト: mysql80-2.lolipop.lan
--- 生成日時: 2026 年 6 月 10 日 19:44
+-- 生成日時: 2026 年 6 月 16 日 14:47
 -- サーバのバージョン： 8.0.43
 -- PHP のバージョン: 8.2.12
 
@@ -85,6 +115,38 @@ SET time_zone = "+00:00";
 --
 -- データベース: `LAA1706258-scenallione`
 --
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `banners`
+--
+
+CREATE TABLE `banners` (
+  `id` int NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `image_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `link_url` varchar(2083) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `display_order` int NOT NULL DEFAULT '0',
+  `start_at` datetime DEFAULT NULL,
+  `end_at` datetime DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `carts`
+--
+
+CREATE TABLE `carts` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `work_id` int NOT NULL,
+  `added_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -239,6 +301,20 @@ CREATE TABLE `works_tag` (
 --
 
 --
+-- テーブルのインデックス `banners`
+--
+ALTER TABLE `banners`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_active_order` (`is_active`,`display_order`);
+
+--
+-- テーブルのインデックス `carts`
+--
+ALTER TABLE `carts`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`,`work_id`);
+
+--
 -- テーブルのインデックス `categories`
 --
 ALTER TABLE `categories`
@@ -305,6 +381,18 @@ ALTER TABLE `works_tag`
 --
 -- ダンプしたテーブルの AUTO_INCREMENT
 --
+
+--
+-- テーブルの AUTO_INCREMENT `banners`
+--
+ALTER TABLE `banners`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- テーブルの AUTO_INCREMENT `carts`
+--
+ALTER TABLE `carts`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- テーブルの AUTO_INCREMENT `categories`
