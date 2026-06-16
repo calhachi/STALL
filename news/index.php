@@ -55,7 +55,7 @@ function formatDate($datetime)
             <?php endif; ?>
 
             <?php if ($news['image_name'] !== null): ?>
-                <img src="<?= $_ENV['APP_URL'] ?>/images/news/<?= h($news['image_name']) ?>" alt="">
+                <img src="<?= $_ENV['APP_URL'] ?>/images/news/<?= h($news['image_name']) ?>" alt="" class="contentImage">
             <?php endif; ?>
 
             <p><?= nl2br(h($news['body'])) ?></p>

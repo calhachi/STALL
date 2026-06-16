@@ -82,10 +82,6 @@ try {
     <link rel="stylesheet" href="<?= $_ENV['APP_URL'] ?>/common/style.css">
     <?php if (!empty($banners)): ?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <style>
-        .topCarousel { width: 100%; }
-        .topCarousel .swiper-slide img { width: 100%; height: auto; display: block; }
-    </style>
     <?php endif; ?>
 </head>
 

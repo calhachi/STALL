@@ -190,7 +190,7 @@ name
             <br>
             <input type="submit" value="追加">
         </form>
-        <p><a href="<?= $_ENV['APP_URL'] ?>/admin/newsadd.php">お知らせ追加</a></p>
+        <p><a href="<?= $_ENV['APP_URL'] ?>/admin/news.php">お知らせ管理</a></p>
         <p><a href="<?= $_ENV['APP_URL'] ?>/admin/carousel.php">バナー管理</a></p>
     </main>
     <script src="<?= $_ENV['APP_URL'] ?>/common/script.js"></script>

@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            header('Location: ' . $_ENV['APP_URL'] . '/admin/index.php');
+            header('Location: ' . $_ENV['APP_URL'] . '/admin/news.php');
             exit();
         } catch (PDOException $e) {
             error_log($e->getMessage());

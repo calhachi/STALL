@@ -145,7 +145,12 @@ div.mainWindow {
     border-radius: 4px;
     padding: 20px 30px 30px 30px;
     margin: 20px auto 40px auto;
+}
 
+.contentImage {
+    max-width: 70%;
+    height: auto;
+    display: block;
 }
 
 /* ↓mypage用―――――――――――――――――――――――――― */
@@ -658,6 +663,37 @@ a.cartItemTitle {
 
 a.cartItemTitle:hover {
     text-decoration: underline;
+}
+
+/* ── トップページ Swiper カルーセル ── */
+/* 2クラスセレクタ（詳細度 0,2,0）で Swiper 自身の .swiper ルール（0,1,0）を上書き */
+.swiper.topCarousel {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.topCarousel .swiper-slide img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* タブレット・スマートフォン: 画面幅いっぱいに広げる */
+@media (max-width: 1024px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .swiper.topCarousel {
+        width: 100vw;
+        margin-left: 0;
+        margin-right: 0;
+        /* position + transform で main の 80% 制約を突き破り viewport 中央に合わせる */
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
 
 .cartItemAuthor {
