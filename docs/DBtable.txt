@@ -62,6 +62,7 @@ works 19
         posted_at　投稿日時 DATETIME
     updated_at 最終更新日 DATETIME
     view_count　閲覧数 INT
+    hidden 非表示処理 TINYINT
 
 categories
 id
@@ -103,8 +104,8 @@ work_id　された作品
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- ホスト: mysql80-2.lolipop.lan
--- 生成日時: 2026 年 6 月 16 日 14:47
+-- ホスト: XXX
+-- 生成日時: 2026 年 6 月 18 日 15:58
 -- サーバのバージョン： 8.0.43
 -- PHP のバージョン: 8.2.12
 
@@ -113,7 +114,7 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 --
--- データベース: `LAA1706258-scenallione`
+-- データベース: `XXX`
 --
 
 -- --------------------------------------------------------
@@ -203,6 +204,22 @@ CREATE TABLE `purchase` (
 -- --------------------------------------------------------
 
 --
+-- テーブルの構造 `reports`
+--
+
+CREATE TABLE `reports` (
+  `id` int UNSIGNED NOT NULL,
+  `work_id` int UNSIGNED NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `reason` tinyint UNSIGNED NOT NULL,
+  `detail` text COLLATE utf8mb4_general_ci,
+  `status` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- テーブルの構造 `subcategories`
 --
 
@@ -269,7 +286,8 @@ CREATE TABLE `works` (
   `thumbnail_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `posted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `view_count` int NOT NULL DEFAULT '0'
+  `view_count` int NOT NULL DEFAULT '0',
+  `is_hidden` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -339,6 +357,14 @@ ALTER TABLE `news`
 ALTER TABLE `purchase`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
+  ADD KEY `work_id` (`work_id`);
+
+--
+-- テーブルのインデックス `reports`
+--
+ALTER TABLE `reports`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_user_work` (`user_id`,`work_id`),
   ADD KEY `work_id` (`work_id`);
 
 --
@@ -413,6 +439,12 @@ ALTER TABLE `purchase`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- テーブルの AUTO_INCREMENT `reports`
+--
+ALTER TABLE `reports`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- テーブルの AUTO_INCREMENT `subcategories`
 --
 ALTER TABLE `subcategories`
@@ -459,4 +491,11 @@ ALTER TABLE `favorite`
 ALTER TABLE `purchase`
   ADD CONSTRAINT `purchase_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `purchase_ibfk_2` FOREIGN KEY (`work_id`) REFERENCES `works` (`id`) ON DELETE CASCADE;
+
+--
+-- テーブルの制約 `reports`
+--
+ALTER TABLE `reports`
+  ADD CONSTRAINT `reports_ibfk_1` FOREIGN KEY (`work_id`) REFERENCES `works` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `reports_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
