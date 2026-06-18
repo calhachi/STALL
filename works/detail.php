@@ -30,6 +30,9 @@ if ($workId <= 0) {
 
         if (!$work) {
             $worksIdError = '作品が存在しません。';
+        } elseif ((int)$work['is_hidden'] === 1) {
+            $worksIdError = 'この作品は削除されました。';
+            $work = null;
         } else {
             $dbh->prepare('UPDATE works SET view_count = view_count + 1 WHERE id = :id')
                 ->execute(['id' => $workId]);
@@ -182,12 +185,16 @@ $playTimeLabels = [
                                             class="favoriteButton <?= $isFavorited ? 'active' : '' ?>"
                                             data-work-id="<?= h($work['id']) ?>">★</button>
                                     </div>
+                                    <button type="button" class="reportButton"
+                                        data-work-id="<?= h($work['id']) ?>" data-logged-in="1">この作品を通報する</button>
                                 <?php else: ?>
                                     <a href="<?= h($_ENV['APP_URL']) ?>/login" class="cartButton">ログインして購入</a>
                                     <div class="favoriteArea">
                                         <span>お気に入り</span>
                                         <button type="button" class="favoriteButton" disabled>★</button>
                                     </div>
+                                    <button type="button" class="reportButton"
+                                        data-work-id="<?= h($work['id']) ?>" data-logged-in="0">この作品を通報する</button>
                                 <?php endif; ?>
                             <?php endif; ?>
                         </div>

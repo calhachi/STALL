@@ -22,7 +22,7 @@ try {
                     (SELECT COUNT(*) FROM favorite WHERE work_id = w.id) AS favorite_count
              FROM works w
              JOIN users u ON w.user_id = u.id
-             WHERE w.category_id = :category_id
+             WHERE w.category_id = :category_id AND w.is_hidden = 0
              ORDER BY w.posted_at DESC
              LIMIT 20'
         );
@@ -34,6 +34,7 @@ try {
                     (SELECT COUNT(*) FROM favorite WHERE work_id = w.id) AS favorite_count
              FROM works w
              JOIN users u ON w.user_id = u.id
+             WHERE w.is_hidden = 0
              ORDER BY w.posted_at DESC
              LIMIT 20'
         );
@@ -46,6 +47,7 @@ try {
                 u.username, w.view_count
          FROM works w
          JOIN users u ON w.user_id = u.id
+         WHERE w.is_hidden = 0
          ORDER BY w.view_count DESC, w.posted_at DESC
          LIMIT 5'
     );
@@ -143,6 +145,8 @@ try {
                                     </div>
                                 </div>
                             </a>
+                            <button type="button" class="reportButton" data-work-id="<?= h($rank['id']) ?>"
+                                data-logged-in="<?= !empty($_SESSION['userId']) ? '1' : '0' ?>">通報</button>
                         </li>
                     <?php endforeach; ?>
                 </ol>
@@ -165,19 +169,23 @@ try {
             <?php if (!empty($works)): ?>
                 <div class="worksList">
                     <?php foreach ($works as $work): ?>
-                        <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($work['id']) ?>">
-                            <div class="worksCard">
-                                <img src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($work['thumbnail_name']) ?>"
-                                    alt="" class="thumbnailImage">
-                                <div>
-                                    <p><?= h($categoryNames[$work['category_id']] ?? '不明') ?></p>
-                                    <p><?= h($work['title']) ?></p>
-                                    <p><?= h($work['username']) ?></p>
-                                    <p><?= $work['price'] === null ? '無料' : h($work['price']) . '円' ?></p>
-                                    <p>♡ <?= h($work['favorite_count']) ?></p>
+                        <div class="worksCardWrap">
+                            <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($work['id']) ?>">
+                                <div class="worksCard">
+                                    <img src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($work['thumbnail_name']) ?>"
+                                        alt="" class="thumbnailImage">
+                                    <div>
+                                        <p><?= h($categoryNames[$work['category_id']] ?? '不明') ?></p>
+                                        <p><?= h($work['title']) ?></p>
+                                        <p><?= h($work['username']) ?></p>
+                                        <p><?= $work['price'] === null ? '無料' : h($work['price']) . '円' ?></p>
+                                        <p>♡ <?= h($work['favorite_count']) ?></p>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+                            <button type="button" class="reportButton" data-work-id="<?= h($work['id']) ?>"
+                                data-logged-in="<?= !empty($_SESSION['userId']) ? '1' : '0' ?>">通報</button>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
@@ -188,6 +196,9 @@ try {
     <footer>
         <a href="<?= $_ENV['APP_URL'] ?>#top"><img src="<?= $_ENV['APP_URL'] ?>/images/top_button.svg" alt="ページトップへ" id="backToTop"></a>
     </footer>
+    <script>
+        const appUrl = <?= json_encode($_ENV['APP_URL']) ?>;
+    </script>
     <script src="<?= $_ENV['APP_URL'] ?>/common/script.js"></script>
     <?php if (!empty($banners)): ?>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>

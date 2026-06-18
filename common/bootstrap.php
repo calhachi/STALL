@@ -37,5 +37,5 @@ function verifyCsrfToken(string $token): bool
 }
 
 // 開発中のみ有効にする（本番公開時はコメントアウト）
-// ini_set('display_errors', 1);
-// error_reporting(E_ALL);
+ini_set('display_errors', 1);
+error_reporting(E_ALL);

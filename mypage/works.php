@@ -161,7 +161,7 @@ try {
     $dbh = dbConnect();
 
     $worksStmt = $dbh->prepare(
-        'SELECT id,title,category_id,thumbnail_name,posted_at
+        'SELECT id,title,category_id,thumbnail_name,posted_at,is_hidden
         FROM works
         WHERE user_id=:userid
         ORDER BY posted_at DESC'
@@ -200,21 +200,26 @@ try {
             <h1>投稿作品一覧</h1>
             <p>クリックで詳細画面に移動します</p>
             <?php foreach ($works as $work): ?>
-                <a href="<?= h($_ENV['APP_URL']) ?>/mypage/works-detail.php?id=<?= h($work['id']) ?>">
+                <?php if ((int)$work['is_hidden'] === 1): ?>
                     <div class="worksCard">
-                        <div><img src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($work['thumbnail_name']) ?>" alt="" class="thumbnailImage"></div>
-                        <div>
-                            <p><?= h($categoryNames[$work['category_id']] ?? '不明') ?></p>
-                            <p><?= h($work['title']) ?></p>
-                            <p><?= h($work['posted_at']) ?></p>
-                        </div>
-
-                        <div>
-                            <p class="deleteButton" data-work-id="<?= h($work['id']) ?>">削除</p>
-                        </div>
+                        <p>利用規約の違反により削除されました。</p>
                     </div>
-                </a>
+                <?php else: ?>
+                    <a href="<?= h($_ENV['APP_URL']) ?>/mypage/works-detail.php?id=<?= h($work['id']) ?>">
+                        <div class="worksCard">
+                            <div><img src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($work['thumbnail_name']) ?>" alt="" class="thumbnailImage"></div>
+                            <div>
+                                <p><?= h($categoryNames[$work['category_id']] ?? '不明') ?></p>
+                                <p><?= h($work['title']) ?></p>
+                                <p><?= h($work['posted_at']) ?></p>
+                            </div>
 
+                            <div>
+                                <p class="deleteButton" data-work-id="<?= h($work['id']) ?>">削除</p>
+                            </div>
+                        </div>
+                    </a>
+                <?php endif; ?>
             <?php endforeach; ?>
         <?php else: ?>
             <p>作品がありません。</p>

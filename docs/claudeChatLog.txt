@@ -207,3 +207,13 @@ api/checkout.php のコメント ↓ Stripe差し替えに Stripeの決済処理
 1. DB処理の前に Stripe の PaymentIntent 作成
 2. 決済成功の Webhook を受けた後に purchase
 3. confirm.php の「購入する」ボタンを Stripe の JS（Stripe.js）に差し替え
+
+All PHP files pass syntax checks. Implementation is complete:
+
+- DB: reports テーブルを docs/migration.sql に追記（work_id, user_id, reason, detail, status, created_at、(user_id, work_id) でUNIQUE）。phpMyAdminで実行してください。
+- 共通モーダル: common/components/header.php に1つだけ追加（全ページ共通）。common/script.js でイベント委譲により .reportButton のクリックを一括処理。
+- 通報ボタン設置: 作品詳細（お気に入りの下）、トップのランキング、新着一覧、検索結果のカードすべてに追加。未ログインならログイン画面へ誘導。
+- API: api/reportWork.php（ログイン必須・CSRF検証・重複通報防止・その他選択時は詳細必須）。
+- 管理画面: admin/reports.php を新設（未対応/対応済みフィルタ、ステータス切替）、api/updateReportStatus.php で状態更新、admin/index.php にリンク追加。
+
+残作業として、docs/migration.sql の新規SQLをphpMyAdminで実行する必要があります。ブラウザでの動作確認はしていないので、マイグレーション適用後に一度実際の画面で通報→管理画面反映の流れを確認してください。

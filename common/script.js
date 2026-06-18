@@ -299,3 +299,90 @@ for (const button of deleteButtons) {
         }
     });
 }
+
+
+// 作品通報モーダル（詳細・ランキング・新着一覧・検索結果すべて共通）
+const reportModalOverlay = document.getElementById('reportModalOverlay');
+
+if (reportModalOverlay) {
+
+    const reportForm        = document.getElementById('reportForm');
+    const reportWorkIdInput = document.getElementById('reportWorkId');
+    const reportDetailText  = document.getElementById('reportDetail');
+    const reportModalError  = document.getElementById('reportModalError');
+    const reportModalClose  = document.getElementById('reportModalClose');
+
+    function openReportModal(workId) {
+        reportForm.reset();
+        reportDetailText.hidden = true;
+        reportModalError.textContent = '';
+        reportWorkIdInput.value = workId;
+        reportModalOverlay.hidden = false;
+    }
+
+    function closeReportModal() {
+        reportModalOverlay.hidden = true;
+    }
+
+    document.addEventListener('click', function (event) {
+        const button = event.target.closest('.reportButton');
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (button.dataset.loggedIn !== '1') {
+            location.href = `${appUrl}/login`;
+            return;
+        }
+
+        openReportModal(button.dataset.workId);
+    });
+
+    reportModalClose.addEventListener('click', closeReportModal);
+
+    reportModalOverlay.addEventListener('click', function (event) {
+        if (event.target === reportModalOverlay) closeReportModal();
+    });
+
+    reportForm.querySelectorAll('input[name="reason"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            reportDetailText.hidden = this.value !== '4';
+        });
+    });
+
+    reportForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        reportModalError.textContent = '';
+
+        const formData = new FormData(reportForm);
+        const submitButton = reportForm.querySelector('.reportSubmitButton');
+        submitButton.disabled = true;
+
+        try {
+            const res = await fetch(`${appUrl}/api/reportWork.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    workId: formData.get('workId'),
+                    reason: formData.get('reason'),
+                    detail: formData.get('detail'),
+                    csrf_token: formData.get('csrf_token')
+                })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                alert('通報を受け付けました。');
+                closeReportModal();
+            } else {
+                reportModalError.textContent = data.message || '通報に失敗しました。';
+            }
+        } catch (e) {
+            reportModalError.textContent = '通信エラーが発生しました。';
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+}

@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
+応答・コード内コメント・コミットメッセージは必ず日本語で作成してください。
 ## Overview
 
 **STALL** は TRPGシナリオ販売サイト。PHP (フレームワークなし) + MySQL + XAMPP 環境で動作する。

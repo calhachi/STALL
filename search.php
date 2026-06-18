@@ -18,7 +18,7 @@ try {
     $catStmt    = $dbh->query('SELECT id, name FROM categories ORDER BY id');
     $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $conditions = [];
+    $conditions = ['w.is_hidden = 0'];
     $params     = [];
 
     if ($keyword !== '') {
@@ -145,19 +145,23 @@ $hasFilter = $keyword !== '' || $filterCat > 0 || $priceType !== '';
         <?php if (!empty($works)): ?>
             <div class="rankingList">
                 <?php foreach ($works as $work): ?>
-                    <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($work['id']) ?>">
-                        <div class="worksCardColumn">
-                            <img src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($work['thumbnail_name']) ?>"
-                                alt="" class="thumbnailImage">
-                            <div>
-                                <p><?= h($categoryNames[$work['category_id']] ?? '不明') ?></p>
-                                <p><?= h($work['title']) ?></p>
-                                <p><?= h($work['username']) ?></p>
-                                <p><?= $work['price'] === null ? '無料' : h($work['price']) . '円' ?></p>
-                                <p>♡ <?= h($work['favorite_count']) ?></p>
+                    <div class="worksCardWrap">
+                        <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($work['id']) ?>">
+                            <div class="worksCardColumn">
+                                <img src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($work['thumbnail_name']) ?>"
+                                    alt="" class="thumbnailImage">
+                                <div>
+                                    <p><?= h($categoryNames[$work['category_id']] ?? '不明') ?></p>
+                                    <p><?= h($work['title']) ?></p>
+                                    <p><?= h($work['username']) ?></p>
+                                    <p><?= $work['price'] === null ? '無料' : h($work['price']) . '円' ?></p>
+                                    <p>♡ <?= h($work['favorite_count']) ?></p>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                        <button type="button" class="reportButton" data-work-id="<?= h($work['id']) ?>"
+                            data-logged-in="<?= !empty($_SESSION['userId']) ? '1' : '0' ?>">通報</button>
+                    </div>
                 <?php endforeach; ?>
             </div>
         <?php elseif ($hasFilter): ?>
@@ -174,6 +178,9 @@ $hasFilter = $keyword !== '' || $filterCat > 0 || $priceType !== '';
                 if (range) range.style.display = this.value === 'paid' ? '' : 'none';
             });
         });
+    </script>
+    <script>
+        const appUrl = <?= json_encode($_ENV['APP_URL']) ?>;
     </script>
     <script src="<?= $_ENV['APP_URL'] ?>/common/script.js"></script>
 </body>
