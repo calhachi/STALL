@@ -15,11 +15,15 @@ $icon = $_FILES['icon'] ?? '';
 $profile = $_POST['profile'] ?? '';
 $iconName = '';
 
+$agreePrivacy = $_POST['agreePrivacy'] ?? '';
+$agreeGuideline = $_POST['agreeGuideline'] ?? '';
+
 $usernameError = '';
 $emailError = '';
 $passError = '';
 $iconError = '';
 $profileError = '';
+$agreeError = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -106,12 +110,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($agreePrivacy === '' || $agreeGuideline === '') {
+        $agreeError = 'プライバシーポリシーと利用ガイドラインの両方に同意してください。';
+    }
+
     if (
         $usernameError === '' &&
         $emailError === '' &&
         $passError === '' &&
         $iconError === '' &&
-        $profileError === ''
+        $profileError === '' &&
+        $agreeError === ''
     ) {
 
         $_SESSION['registration'] = [
@@ -170,15 +179,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
             <input type="text" name="email" id="email" placeholder="example@example.com">
             <br>
-            <label for="pass">パスワード</label>
             <br>
+            <label for="pass">パスワード</label>
             <p>※半角アルファベットと数字を含む8文字以上20文字以内</p>
             <?php if ($passError != ''): ?>
                 <p><?= $passError ?></p>
             <?php endif; ?>
             <input type="password" name="pass" id="pass" class="chara-limit" data-maxlength="20">
             <p class="count"></p>
-            <br>
             <label for="pass2">パスワード（確認用）</label>
             <br>
             <input type="password" name="pass2" id="pass2" class="chara-limit" data-maxlength="20">
@@ -200,6 +208,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
             <textarea name="profile" id="profile" class="chara-limit" data-maxlength="300">よろしくお願いします。</textarea>
             <p class="count"></p>
+            <br>
+            <p><strong>【プライバシーポリシー】</strong><br>
+                当サイトではメールアドレスをログイン機能およびサービス提供のために利用します。<br>
+                法令に基づく場合を除き第三者に提供しません。</p>
+            <?php if ($agreeError != ''): ?>
+                <p><?= $agreeError ?></p>
+            <?php endif; ?>
+            <input type="checkbox" name="agreePrivacy" id="agreePrivacy" value="1" <?= $agreePrivacy != '' ? 'checked' : '' ?>>
+            <label for="agreePrivacy">上記のプライバシーポリシーに同意します。</label><br>
+            <input type="checkbox" name="agreeGuideline" id="agreeGuideline" value="1" <?= $agreeGuideline != '' ? 'checked' : '' ?>>
+            <label for="agreeGuideline"><a href="<?= $_ENV['APP_URL'] ?>/other/guidelines" target="guidelineWindow" onclick="window.open(this.href, 'guidelineWindow', 'width=600,height=800'); return false;">利用ガイドライン</a>を読み、それに同意します。</label>
+            <br>
             <br>
             <input type="submit" value="確認画面へ">
         </form>
