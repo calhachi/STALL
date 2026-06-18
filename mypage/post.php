@@ -156,8 +156,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mime = finfo_file($finfo, $tmpName);
         finfo_close($finfo);
 
-        $allowed = ['application/pdf', 'text/plain'];
-        $allowedExt = ['pdf', 'txt'];
+        $allowedMime = [
+            'application/pdf',
+            'text/plain',
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'application/zip',
+            'application/x-zip-compressed',
+            'application/x-zip',
+            'multipart/x-zip',
+        ];
+        $allowedExt = ['pdf', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'zip'];
 
         $ext = strtolower(pathinfo($work['name'], PATHINFO_EXTENSION));
 
@@ -166,17 +176,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $originalBaseName = pathinfo($work['name'], PATHINFO_FILENAME);
         $worksOriginalName = $originalBaseName . '.' . $ext;
 
+        $isZip = ($ext === 'zip');
+
         if (
-            !in_array($mime, $allowed) ||
-            !in_array($ext, $allowedExt)
+            !in_array($ext, $allowedExt) ||
+            (!$isZip && !in_array($mime, $allowedMime))
         ) {
-
-            $worksError = '.pdf,.txtファイルのみアップロード可能です。';
+            $worksError = '.pdf,.txt,.jpg,.png,.gif,.zipファイルのみアップロード可能です。';
         } elseif ($work['size'] > 20000000) {
-
             $worksError = '20MB以上のファイルはアップロードできません。';
-        } else {
+        } elseif ($isZip) {
+            $zip = new ZipArchive();
+            if ($zip->open($work['tmp_name']) !== true) {
+                $worksError = 'ZIPファイルが破損しているか、開けません。';
+            } else {
+                $allowedZipContents = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'txt', 'pdf'];
+                $totalUncompressed = 0;
+                for ($zi = 0; $zi < $zip->numFiles; $zi++) {
+                    $entry = $zip->statIndex($zi);
+                    if (substr($entry['name'], -1) === '/') continue;
+                    $entryExt = strtolower(pathinfo($entry['name'], PATHINFO_EXTENSION));
+                    if (!in_array($entryExt, $allowedZipContents)) {
+                        $worksError = 'ZIP内に許可されていないファイル形式が含まれています（許可：jpg, png, gif, webp, txt, pdf）。';
+                        break;
+                    }
+                    $totalUncompressed += $entry['size'];
+                    if ($totalUncompressed > 200 * 1024 * 1024) {
+                        $worksError = 'ZIP展開後のサイズが200MBを超えています。';
+                        break;
+                    }
+                }
+                $zip->close();
+            }
+        }
 
+        if ($worksError === '') {
             if (!move_uploaded_file(
                 $work['tmp_name'],
                 __DIR__ . '/../userdata/temp/' . $worksName
@@ -470,7 +504,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
             <textarea name="description"><?= h($_POST['description'] ?? '') ?></textarea>
 
-            <p>作品ファイルアップロード</p>
+            <p>作品ファイルアップロード（対応形式：pdf, txt, jpg, png, gif, zip／20MB以内）</p>
             <?php if ($worksError != ''): ?>
                 <p><?= $worksError ?></p>
             <?php endif; ?>
@@ -479,7 +513,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p>※新しいファイルを選択すると上書きされます</p>
                 <p><?= h($work['name']) ?></p>
             <?php endif; ?>
-            <input type="file" name="work" id="work" accept=".pdf,.txt">
+            <input type="file" name="work" id="work" accept=".pdf,.txt,.jpg,.jpeg,.png,.gif,.zip">
 
             <p>トレーラー画像・サンプル画像（四枚まで）</p>
             <?php if ($worksImagesError != ''): ?>
