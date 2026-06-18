@@ -62,6 +62,7 @@ try {
                                 <button type="submit">ログアウト</button>
                             </form>
                         </li>
+                        <li><a href="<?= $_ENV['APP_URL'] ?>/mypage/delete">アカウント削除</a></li>
                     </ul>
                 </section>
                 <section>
