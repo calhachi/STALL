@@ -27,8 +27,17 @@ https://saka.gloomy.jp/portfolio/stall/login/registration
 通知機能はまだ作ってないので気がつけたら消します。
 
 ・購入
-現在決済機能は準備中です。
-後日Stripe のテストモードで実装予定。
+決済時には下記のテスト用決済情報を使ってください。
+実在のカード番号を入力しても弾かれます。
+
+連絡先メールアドレス：ドメイン部分さえ通れば架空の物で大丈夫です。
+テストアカウント用ダミーアドレスをコピー＆ペーストするのが楽です。
+stall@example.com
+テスト購入用のカード番号：4242 4242 4242 4242
+
+有効期限：任意の未来の月/年
+CVCコード：任意の半角数字3桁
+カード所有者名：半角英数1文字以上
 
 ・ダウンロード方法
 一度購入した作品は購入完了画面、マイページ内の購入履歴、作品詳細ページからダウンロード可能です。
@@ -37,3 +46,24 @@ https://saka.gloomy.jp/portfolio/stall/login/registration
 マイページ＞アカウントメニューから可能です。
 アカウント作りっぱなしが気になる方はご活用ください。
 ※テストユーザーアカウントは削除しないでください。
+
+
+
+【ソースをDLしてローカル環境で動かす場合】
+
+.envファイルの構造例
+→.env.exampleにあります。
+
+データベーススキーマ
+→docs/schema.sql内のSQL文を作成した空のデータベースを選択した状態で実行すると全12テーブルが再現されます。
+
+userdata内のファイルは.gitignoreしているのでソースコードのDL後に
+icon,temp,thumbnail,works-image,works
+上記5つのフォルダを追加で作成してください。
+
+あとはXAMPP（PHPのローカル開発環境を作るソフト）にデフォルトで付属していたので自分では入れた覚えがないんですが
+
+4. PHP拡張の確認 — pdo_mysql・mbstring・fileinfo・curl・opensslが必要（Stripe SDKがcurl/opensslを使用、download.phpがfileinfoを使用）。XAMPP標準なら通常有効
+5. Apacheのmod_rewriteが有効 — .htaccessで拡張子省略アクセスをしているため
+ 
+以上の拡張が有効になっているらしいです
