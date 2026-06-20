@@ -16,7 +16,7 @@ https://saka.gloomy.jp/portfolio/stall/login/registration<br>
 
 ### ・作品の投稿
 ログイン後、マイページ内から可能です。<br>
-ガイドライン(https://saka.gloomy.jp/portfolio/stall/other/guidlines)をよく読み、同意した上でご利用ください。<br>
+ガイドライン( https://saka.gloomy.jp/portfolio/stall/other/guidlines )をよく読み、同意した上でご利用ください。<br>
 無害であれば「あ」一文字しか書いてない.txtファイルとかアップロードしても大丈夫です。
 
 ### ・検索機能
