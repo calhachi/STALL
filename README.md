@@ -63,7 +63,7 @@ icon,temp,thumbnail,works-image,works
 
 あとはXAMPP（PHPのローカル開発環境を作るソフト）にデフォルトで付属していたので自分では入れた覚えがないんですが
 
-4. PHP拡張の確認 — pdo_mysql・mbstring・fileinfo・curl・opensslが必要（Stripe SDKがcurl/opensslを使用、download.phpがfileinfoを使用）。XAMPP標準なら通常有効
-5. Apacheのmod_rewriteが有効 — .htaccessで拡張子省略アクセスをしているため
+ PHP拡張の確認 — pdo_mysql・mbstring・fileinfo・curl・opensslが必要（Stripe SDKがcurl/opensslを使用、download.phpがfileinfoを使用）。XAMPP標準なら通常有効
+ Apacheのmod_rewriteが有効 — .htaccessで拡張子省略アクセスをしているため
  
 以上の拡張が有効になっているらしいです
