@@ -1,15 +1,64 @@
 <?php
 require_once __DIR__ . '/../common/bootstrap.php';
+require_once __DIR__ . '/../common/dbConnect.php';
 require_once __DIR__ . '/../common/requireLogin.php';
+require_once __DIR__ . '/../common/purchase.php';
 
 requireLogin();
 
-$purchasedTitles = $_SESSION['purchaseComplete'] ?? [];
-unset($_SESSION['purchaseComplete']);
+$sessionId = $_GET['session_id'] ?? '';
 
-if (empty($purchasedTitles)) {
-    header('Location: ' . $_ENV['APP_URL'] . '/');
-    exit();
+$purchasedTitles = [];
+
+// 合計0円購入はStripeを通さないため、checkout.phpがセッションに直接渡した結果を表示する
+if ($sessionId === '') {
+    $purchasedTitles = $_SESSION['purchaseComplete'] ?? [];
+    unset($_SESSION['purchaseComplete']);
+
+    if (empty($purchasedTitles)) {
+        header('Location: ' . $_ENV['APP_URL'] . '/');
+        exit();
+    }
+} else {
+    \Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+
+    try {
+        $checkoutSession = \Stripe\Checkout\Session::retrieve($sessionId);
+
+        if (
+            $checkoutSession->payment_status !== 'paid'
+            || (int)$checkoutSession->metadata->user_id !== (int)$_SESSION['userId']
+        ) {
+            header('Location: ' . $_ENV['APP_URL'] . '/');
+            exit();
+        }
+
+        $workIds = array_map('intval', explode(',', $checkoutSession->metadata->work_ids));
+
+        $dbh = dbConnect();
+        recordPurchase($dbh, (int)$_SESSION['userId'], $workIds);
+
+        $placeholders = implode(',', array_fill(0, count($workIds), '?'));
+        $titleStmt    = $dbh->prepare(
+            "SELECT id AS work_id, title FROM works WHERE id IN ($placeholders)"
+        );
+        $titleStmt->execute($workIds);
+        $purchasedTitles = $titleStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (\Stripe\Exception\ApiErrorException $e) {
+        error_log($e->getMessage());
+        header('Location: ' . $_ENV['APP_URL'] . '/error.php');
+        exit();
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+        header('Location: ' . $_ENV['APP_URL'] . '/error.php');
+        exit();
+    }
+
+    if (empty($purchasedTitles)) {
+        header('Location: ' . $_ENV['APP_URL'] . '/');
+        exit();
+    }
 }
 ?>
 <!DOCTYPE html>

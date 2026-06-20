@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../common/bootstrap.php';
 require_once __DIR__ . '/../common/dbConnect.php';
 
-if ($_SESSION['role'] !== 1) {
+if (($_SESSION['role'] ?? 0) !== 1) {
     header('Location: ' . $_ENV['APP_URL']);
     exit();
 }

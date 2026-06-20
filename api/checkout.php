@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../common/bootstrap.php';
 require_once __DIR__ . '/../common/dbConnect.php';
 require_once __DIR__ . '/../common/requireLogin.php';
+require_once __DIR__ . '/../common/purchase.php';
 
 requireLogin();
 
@@ -10,11 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
+\Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+
 try {
     $dbh = dbConnect();
 
     $stmt = $dbh->prepare(
-        'SELECT c.work_id, w.title
+        'SELECT c.work_id, w.title, w.price
          FROM carts c
          JOIN works w ON c.work_id = w.id
          WHERE c.user_id = :userId'
@@ -40,33 +43,56 @@ try {
         return !in_array($item['work_id'], $purchasedIds);
     }));
 
-    $dbh->beginTransaction();
-
-    $insertStmt = $dbh->prepare(
-        'INSERT INTO purchase (user_id, work_id) VALUES (:userId, :workId)'
-    );
-    foreach ($purchasableItems as $item) {
-        $insertStmt->execute(['userId' => (int)$_SESSION['userId'], 'workId' => $item['work_id']]);
+    if (empty($purchasableItems)) {
+        header('Location: ' . $_ENV['APP_URL'] . '/cart');
+        exit();
     }
 
-    $dbh->prepare('DELETE FROM carts WHERE user_id = :userId')
-        ->execute(['userId' => (int)$_SESSION['userId']]);
+    $total = array_sum(array_column($purchasableItems, 'price'));
 
-    $dbh->commit();
+    // 合計0円（無料配布など）はStripeを通さずその場で購入確定する
+    if ($total <= 0) {
+        recordPurchase($dbh, (int)$_SESSION['userId'], array_column($purchasableItems, 'work_id'));
 
-    // ↓ Stripe差し替え時はここまでの処理をStripe決済成功後のWebhookに移す
+        $_SESSION['purchaseComplete'] = array_map(function ($item) {
+            return ['work_id' => $item['work_id'], 'title' => $item['title']];
+        }, $purchasableItems);
 
-    $_SESSION['purchaseComplete'] = array_map(function ($item) {
-        return ['work_id' => $item['work_id'], 'title' => $item['title']];
+        header('Location: ' . $_ENV['APP_URL'] . '/purchase/complete');
+        exit();
+    }
+
+    // JPYはゼロ・デシマル通貨のため unit_amount はそのまま金額（円）を指定する
+    $lineItems = array_map(function ($item) {
+        return [
+            'price_data' => [
+                'currency'     => 'jpy',
+                'product_data' => ['name' => $item['title']],
+                'unit_amount'  => (int)$item['price'],
+            ],
+            'quantity' => 1,
+        ];
     }, $purchasableItems);
 
-    header('Location: ' . $_ENV['APP_URL'] . '/purchase/complete');
+    $session = \Stripe\Checkout\Session::create([
+        'mode'        => 'payment',
+        'line_items'  => $lineItems,
+        'success_url' => $_ENV['APP_URL'] . '/purchase/complete?session_id={CHECKOUT_SESSION_ID}',
+        'cancel_url'  => $_ENV['APP_URL'] . '/purchase/confirm',
+        'metadata'    => [
+            'user_id'  => $_SESSION['userId'],
+            'work_ids' => implode(',', array_column($purchasableItems, 'work_id')),
+        ],
+    ]);
+
+    header('Location: ' . $session->url);
     exit();
 
+} catch (\Stripe\Exception\ApiErrorException $e) {
+    error_log($e->getMessage());
+    header('Location: ' . $_ENV['APP_URL'] . '/error.php');
+    exit();
 } catch (PDOException $e) {
-    if (isset($dbh) && $dbh->inTransaction()) {
-        $dbh->rollBack();
-    }
     error_log($e->getMessage());
     header('Location: ' . $_ENV['APP_URL'] . '/error.php');
     exit();

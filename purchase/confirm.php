@@ -53,24 +53,35 @@ foreach ($cartItems as $item) {
 
         <div class="confirmList">
             <?php foreach ($cartItems as $item): ?>
-            <div class="cartItem">
-                <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($item['work_id']) ?>">
-                    <img
-                        src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($item['thumbnail_name']) ?>"
-                        alt="<?= h($item['title']) ?>"
-                        class="cartItemThumb">
-                </a>
-                <div class="cartItemInfo">
-                    <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($item['work_id']) ?>" class="cartItemTitle">
-                        <?= h($item['title']) ?>
+                <div class="cartItem">
+                    <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($item['work_id']) ?>">
+                        <img
+                            src="<?= h($_ENV['APP_URL']) ?>/userdata/thumbnail/<?= h($item['thumbnail_name']) ?>"
+                            alt="<?= h($item['title']) ?>"
+                            class="cartItemThumb">
                     </a>
-                    <p class="cartItemAuthor"><?= h($item['username']) ?></p>
-                    <p class="cartItemPrice"><?= number_format((int)($item['price'] ?? 0)) ?>円</p>
+                    <div class="cartItemInfo">
+                        <a href="<?= h($_ENV['APP_URL']) ?>/works/detail?id=<?= h($item['work_id']) ?>" class="cartItemTitle">
+                            <?= h($item['title']) ?>
+                        </a>
+                        <p class="cartItemAuthor"><?= h($item['username']) ?></p>
+                        <p class="cartItemPrice"><?= number_format((int)($item['price'] ?? 0)) ?>円</p>
+                    </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
-
+        <?php if ($total > 0): ?>
+            <p>※購入するボタンを押すと決済システムStripe（テストモード）の決済ページにリダイレクトされます。
+                <br>購入処理を試す際にはご自身のクレジットカード情報は入力せず、下記のテスト購入用情報を使用してください。
+            </p>
+            <p> 連絡先メールアドレス：テストアカウント用ダミーアドレスをコピー＆ペーストしてください
+                <br>stall@example.com
+                <br>テスト購入用のカード番号：4242 4242 4242 4242
+                <br>有効期限：任意の未来の月/年
+                <br>CVCコード：任意の半角数字3桁
+                <br>カード所有者名：半角英数1文字以上
+            </p>
+        <?php endif; ?>
         <div class="cartFooter">
             <a href="<?= h($_ENV['APP_URL']) ?>/cart" class="cartBackLink">カートに戻る</a>
             <p class="cartTotal">合計：<?= number_format($total) ?>円</p>
@@ -78,6 +89,7 @@ foreach ($cartItems as $item) {
                 <button type="submit" class="cartButton cartProceedButton">購入する</button>
             </form>
         </div>
+
     </main>
     <footer>
         <a href="<?= $_ENV['APP_URL'] ?>#top"><img src="<?= $_ENV['APP_URL'] ?>/images/top_button.svg" alt="ページトップへ" id="backToTop"></a>

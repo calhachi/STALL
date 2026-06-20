@@ -3,7 +3,7 @@ require_once __DIR__ . '/../common/bootstrap.php';
 require_once __DIR__ . '/../common/dbConnect.php';
 require_once __DIR__ . '/../common/varidateImage.php';
 
-if (($_SESSION['role'] ?? 0) === 0) {
+if (($_SESSION['role'] ?? 0) !== 1) {
     header('Location: ' . $_ENV['APP_URL']);
     exit();
 }
